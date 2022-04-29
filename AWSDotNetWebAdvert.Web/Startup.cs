@@ -18,6 +18,17 @@ namespace AWSDotNetWebAdvert.Web {
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services) {
+            services.AddCognitoIdentity(config => {
+                config.Password = new Microsoft.AspNetCore.Identity.PasswordOptions {
+                    RequireDigit = false,
+                    RequiredLength = 6,
+                    RequiredUniqueChars = 0,
+                    RequireLowercase = false,
+                    RequireNonAlphanumeric = false,
+                    RequireUppercase = false
+                };
+            });
+
             services.AddControllersWithViews();
         }
 
@@ -32,7 +43,8 @@ namespace AWSDotNetWebAdvert.Web {
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            //app.UseAuthorization();
+            app.UseAuthentication();
 
             app.UseEndpoints(endpoints => {
                 endpoints.MapControllerRoute(
