@@ -1,3 +1,4 @@
+using AWSDotNetWebAdvert.Web.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -33,6 +34,8 @@ namespace AWSDotNetWebAdvert.Web {
             services.ConfigureApplicationCookie(options => {
                 options.LoginPath = "/Accounts/Login";
             });
+
+            services.AddTransient<IFileUploader, S3FileUploader>();
 
             services.AddControllersWithViews();
         }
