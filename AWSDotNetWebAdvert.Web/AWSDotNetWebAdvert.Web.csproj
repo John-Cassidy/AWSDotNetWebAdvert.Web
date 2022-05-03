@@ -9,6 +9,7 @@
     <PackageReference Include="Amazon.AspNetCore.Identity.Cognito" Version="3.0.0" />
     <PackageReference Include="Amazon.Extensions.CognitoAuthentication" Version="2.2.2" />
     <PackageReference Include="AWSSDK.S3" Version="3.7.8.23" />
+    <PackageReference Include="Jpcassidy.AWSDotNetWebAdvert.AdvertApi.Models" Version="1.0.0" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
   </ItemGroup>
 
