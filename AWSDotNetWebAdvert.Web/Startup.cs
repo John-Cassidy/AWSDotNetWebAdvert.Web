@@ -8,6 +8,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using AWSDotNetWebAdvert.Web.ServiceClients;
 
 namespace AWSDotNetWebAdvert.Web {
     public class Startup {
@@ -35,7 +37,10 @@ namespace AWSDotNetWebAdvert.Web {
                 options.LoginPath = "/Accounts/Login";
             });
 
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddTransient<IFileUploader, S3FileUploader>();
+            services.AddHttpClient<IAdvertApiClient, AdvertApiClient>();
 
             services.AddControllersWithViews();
         }

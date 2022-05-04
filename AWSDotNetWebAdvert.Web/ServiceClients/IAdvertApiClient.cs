@@ -9,7 +9,7 @@ namespace AWSDotNetWebAdvert.Web.ServiceClients
 {
     public interface IAdvertApiClient
     {
-        Task<CreateAdvertResponse> Create(AdvertModel model);
+        Task<AdvertResponse> Create(CreateAdvertModel model);
         //Task<AdvertResponse> CreateAsync(CreateAdvertModel model);
         //Task<bool> ConfirmAsync(ConfirmAdvertRequest model);
         //Task<List<Advertisement>> GetAllAsync();
