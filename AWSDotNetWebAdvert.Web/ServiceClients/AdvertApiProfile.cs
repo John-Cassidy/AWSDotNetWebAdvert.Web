@@ -13,6 +13,7 @@ namespace AWSDotNetWebAdvert.Web.ServiceClients
         public AdvertApiProfile() {
             CreateMap<AdvertModel, CreateAdvertModel>().ReverseMap();
             CreateMap<CreateAdvertResponse, AdvertResponse>().ReverseMap();
+            CreateMap<ConfirmAdvertRequest, ConfirmAdvertModel>().ReverseMap();
         }
     }
 }
