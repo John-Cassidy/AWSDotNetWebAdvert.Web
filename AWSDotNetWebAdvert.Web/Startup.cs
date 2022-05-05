@@ -10,6 +10,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AWSDotNetWebAdvert.Web.ServiceClients;
+using Polly;
+using System.Net.Http;
+using Polly.Extensions.Http;
+using System.Net;
 
 namespace AWSDotNetWebAdvert.Web {
     public class Startup {
@@ -40,7 +44,8 @@ namespace AWSDotNetWebAdvert.Web {
             services.AddAutoMapper(typeof(Startup));
 
             services.AddTransient<IFileUploader, S3FileUploader>();
-            services.AddHttpClient<IAdvertApiClient, AdvertApiClient>();
+            services.AddHttpClient<IAdvertApiClient, AdvertApiClient>().AddPolicyHandler(GetRetryPolicy())
+                .AddPolicyHandler(GetCircuitBreakerPatternPolicy());
 
             services.AddControllersWithViews();
         }
@@ -64,6 +69,15 @@ namespace AWSDotNetWebAdvert.Web {
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
             });
+        }
+
+        private IAsyncPolicy<HttpResponseMessage> GetRetryPolicy() {
+            return HttpPolicyExtensions.HandleTransientHttpError()
+                    .OrResult(msg => msg.StatusCode == HttpStatusCode.NotFound)
+                    .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)));
+        }
+        private IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPatternPolicy() {
+            return HttpPolicyExtensions.HandleTransientHttpError().CircuitBreakerAsync(3, TimeSpan.FromSeconds(30));
         }
     }
 }
