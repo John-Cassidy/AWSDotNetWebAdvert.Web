@@ -57,5 +57,28 @@ namespace AWSDotNetWebAdvert.Web.ServiceClients
             return response.StatusCode == HttpStatusCode.OK;
         }
 
+        public async Task<List<Advertisement>> GetAllAsync() {
+            var response = await _client.GetAsync(new Uri($"{_baseAddress}/all")).ConfigureAwait(false);
+            var allAdvertModelsAsString = await response.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            var allAdvertModels = JsonSerializer
+                .Deserialize<List<AdvertModel>>(
+                    allAdvertModelsAsString,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            return allAdvertModels.Select(x => _mapper.Map<Advertisement>(x)).ToList();
+        }
+
+        public async Task<Advertisement> GetAsync(string advertId) {
+            var apiCallResponse = await _client.GetAsync(new Uri($"{_baseAddress}/{advertId}")).ConfigureAwait(false);
+
+            var fullAdvertAsString = await apiCallResponse.Content.ReadAsStringAsync().ConfigureAwait(false);
+            var fullAdvert = JsonSerializer
+                .Deserialize<AdvertModel>(
+                    fullAdvertAsString,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+            return _mapper.Map<Advertisement>(fullAdvert);
+        }
     }
 }

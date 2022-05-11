@@ -1,4 +1,8 @@
-﻿using AWSDotNetWebAdvert.Web.Models;
+﻿using AutoMapper;
+using AWSDotNetWebAdvert.Web.Models;
+using AWSDotNetWebAdvert.Web.Models.Home;
+using AWSDotNetWebAdvert.Web.ServiceClients;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
@@ -9,18 +13,34 @@ using System.Threading.Tasks;
 
 namespace AWSDotNetWebAdvert.Web.Controllers {
     public class HomeController : Controller {
-        private readonly ILogger<HomeController> _logger;
+        public ISearchApiClient SearchApiClient { get; }
+        public IMapper Mapper { get; }
+        public IAdvertApiClient ApiClient { get; }
 
-        public HomeController(ILogger<HomeController> logger) {
-            _logger = logger;
+        public HomeController(ISearchApiClient searchApiClient, IMapper mapper, IAdvertApiClient apiClient) {
+            SearchApiClient = searchApiClient;
+            Mapper = mapper;
+            ApiClient = apiClient;
+        }
+        [ResponseCache(Duration = 60)]
+        public async Task<IActionResult> Index() {
+            var allAds = await ApiClient.GetAllAsync().ConfigureAwait(false);
+            var allViewModels = allAds.Select(x => Mapper.Map<IndexViewModel>(x));
+
+            return View(allViewModels);
         }
 
-        public IActionResult Index() {
-            return View();
-        }
+        [HttpPost]
+        public async Task<IActionResult> Search(string keyword) {
+            var viewModel = new List<SearchViewModel>();
 
-        public IActionResult Privacy() {
-            return View();
+            var searchResult = await SearchApiClient.Search(keyword).ConfigureAwait(false);
+            searchResult.ForEach(advertDoc => {
+                var viewModelItem = Mapper.Map<SearchViewModel>(advertDoc);
+                viewModel.Add(viewModelItem);
+            });
+
+            return View("Search", viewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
